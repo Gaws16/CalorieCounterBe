@@ -1,0 +1,6 @@
+@CalorieCounterBe_HostAddress = http://localhost:5263
+
+GET {{CalorieCounterBe_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
