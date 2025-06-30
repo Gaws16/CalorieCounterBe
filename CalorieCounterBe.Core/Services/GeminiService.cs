@@ -31,7 +31,9 @@ namespace CalorieCounterBe.Core.Services
             var initialRequset = Environment.GetEnvironmentVariable("GEMINI_INITIAL_PROMPT")
                 ?? throw new ApplicationException("GEMINI_INITIAL_PROMPT environment variable is not set.");
 
-            var prompt = $"{initialRequset} {message}";
+            var returnFormat = Environment.GetEnvironmentVariable("GEMINI_REESPONSE_FORMAT")
+                ?? throw new ApplicationException("GEMINI_REESPONSE_FORMAT environment variable is not set.");
+
 
             var requestBody = new
             {
@@ -39,11 +41,31 @@ namespace CalorieCounterBe.Core.Services
             {
                 new
                 {
+                    role = "user",
                     parts = new[]
                     {
-                        new { text = prompt }
+                        new { text = initialRequset }
+                    },
+                },
+                new
+                {
+                    role = "user",
+                    parts = new[]
+                    {
+                        new { text = message }
+                    }
+                },
+                new
+                {
+                    role = "user",
+                    parts = new[]
+                    {
+                        new { text = returnFormat }
                     }
                 }
+
+
+
             }
             };
 
