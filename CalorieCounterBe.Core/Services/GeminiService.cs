@@ -22,6 +22,17 @@ namespace CalorieCounterBe.Core.Services
 
         public async Task<string> SendMessageAsync(string message)
         {
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                throw new ArgumentException("Message cannot be empty.", nameof(message));
+            }
+
+            // Explane to Gemini what it should do
+            var initialRequset = Environment.GetEnvironmentVariable("GEMINI_INITIAL_PROMPT")
+                ?? throw new ApplicationException("GEMINI_INITIAL_PROMPT environment variable is not set.");
+
+            var prompt = $"{initialRequset} {message}";
+
             var requestBody = new
             {
                 contents = new[]
@@ -30,13 +41,13 @@ namespace CalorieCounterBe.Core.Services
                 {
                     parts = new[]
                     {
-                        new { text = message }
+                        new { text = prompt }
                     }
                 }
             }
             };
 
-            var response = await httpClient.PostAsJsonAsync("models/gemini-1.5-pro-001:generateContent", requestBody);
+            var response = await httpClient.PostAsJsonAsync("models/gemini-1.5-pro:generateContent", requestBody);
             response.EnsureSuccessStatusCode();
 
             using var stream = await response.Content.ReadAsStreamAsync();
